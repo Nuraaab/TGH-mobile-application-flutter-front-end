@@ -91,7 +91,7 @@ List<dynamic> modelList = [];
 
  @override
   Widget build(BuildContext context)=>_isLodding ? WillPopScope(onWillPop: () => Services.onBackPressed(context),
-  child: Scaffold(body: ( Center(child: Lottie.asset('assets/images/animation_lkgign21.json'))))) : (modelList.isEmpty ? Scaffold(
+  child: Scaffold(body: ( Center(child: Lottie.asset('assets/images/animation_lkghd69s.json'))))) : (modelList.isEmpty ? Scaffold(
     body: Container(
      margin: EdgeInsets.only(left: 15, right: 15),
      child: Column(

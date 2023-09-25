@@ -19,60 +19,6 @@ import '../widget/my_text.dart';
 import '../widget/navigation_drawer.dart';
 import 'BottomNavBar.dart';
 import 'home.dart';
-// class Teams extends StatefulWidget {
-//   const Teams({Key? key}) : super(key: key);
-//
-//   @override
-//   State<Teams> createState() => _TeamsState();
-// }
-//
-// class _TeamsState extends State<Teams> {
-//   @override
-//   void initState(){
-//     super.initState();
-//     _checkLanguageStatus();
-//   }
-//   bool _isEnglish =false;
-//   void _checkLanguageStatus() async{
-//     final prefs = await SharedPreferences.getInstance();
-//     final isEnglish = prefs.getBool('isEnglish') ?? false;
-//     setState(() {
-//       _isEnglish = isEnglish;
-//     });
-//   }
-//   Future<List> getTeams() async {
-//     final prefs = await SharedPreferences.getInstance();
-//     var temp = prefs.getString('jsonteams'); //get the doctors data from session
-//     temp=null;
-//     if (temp == null) {
-//       // fetch doctors data from database and store to the session
-//       final response = await http
-//           .get(Uri.parse("https://teklehaimanothospital.com/api/teamGetData.php"));
-//       await prefs.setString('jsonteams', response.body);
-//       print(response.body);
-//       return json.decode(response.body);// return the fetched data
-//     } else {
-//       return json.decode(temp); // return from session
-//     }
-//   }
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//
-//       body: FutureBuilder<List>(
-//         future: getTeams(),
-//         builder: (context, snapshot) {
-//           if (snapshot.hasError) {}
-//           if (snapshot.hasData) {
-//             return Items(list: snapshot.data!, isEnglish: _isEnglish,);// return the widget with doctors list passed to its constructor
-//           } else {
-//             return  Center(child: Lottie.asset('assets/images/animation_lkgign21.json'));// return CircularProgressIndicator at the center of the page if the data is empty or not loaded
-//           }
-//         },
-//       ),
-//     );
-//   }
-// }
  class Teams extends StatefulWidget {
    const Teams({super.key});
 
@@ -119,7 +65,7 @@ import 'home.dart';
   }
    @override
    Widget build(BuildContext context) => _isLodding ? WillPopScope(onWillPop: () => Services.onBackPressed(context),
-   child: (Scaffold(body: Center(child: Lottie.asset('assets/images/animation_lkgign21.json')),))) :
+   child: (Scaffold(body: Center(child: Lottie.asset('assets/images/animation_lkghd69s.json')),))) :
    (_teamsList.isEmpty ? 
    WillPopScope(
      onWillPop: () => Services.onBackPressed(context),

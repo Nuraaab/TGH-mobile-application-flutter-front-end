@@ -91,31 +91,6 @@ class _NavigationDrawerWidgetState extends State<NavigationDrawerWidget> {
       snackBar.show(
           context, _isEnglish ? "Something went wrong. please try again" : "ስህተት ተገኝቷል። እባክዎ እንደገና ይሞክሩ：：", Colors.red);
     }
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
-    // var temp = prefs.getString('profile');
-    // String email = prefs.getString('email') ?? '';
-    // temp=null;
-    // try {
-    //   if(temp==null){
-    //     final response = await http.post(Uri.parse("https://teklehaimanothospital.com/api/userGetData.php"), body: {
-    //       'email': email,
-    //     });
-    //     final data = json.decode(response.body); // decode the response body as a List<dynamic>
-    //     prefs.setString('profile', response.body); // store the response body as a String
-    //     setState(() {
-    //       _profileData = data; // assign the decoded data to the _dept_no variable
-    //     });
-    //   }else{
-    //     setState(() {
-    //       _profileData = json.decode(temp!);
-    //     });
-    //   }
-    // } catch (e) {
-    //   print('Error fetching data: $e');
-    //   setState(() {
-    //     _profileData = [];
-    //   });
-    // }
   }
   Future _updateProfile(BuildContext context, String avator) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -243,7 +218,7 @@ Widget _buildLoginButton(){
   }
   @override
   Widget build(BuildContext context)=>
-      ((_profileData.isEmpty) && _isLoggedIn) ? Center(child: Lottie.asset('assets/images/animation_lkgign21.json'),) : WillPopScope(
+      ((_profileData.isEmpty) && _isLoggedIn) ? Center(child: Lottie.asset('assets/images/animation_lkghd69s.json'),) : WillPopScope(
         onWillPop: () => Services.onBackPressed(context),
         child: Drawer(
     child: SingleChildScrollView(

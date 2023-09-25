@@ -92,7 +92,7 @@ class _TimeTablePageState extends State<TimeTablePage> {
   }
   @override
   Widget build(BuildContext context) =>(_isLodding) ? WillPopScope(onWillPop: () => Services.onBackPressed(context),
-  child: (Scaffold(body: Center(child: Lottie.asset('assets/images/animation_lkgign21.json'),),))) :
+  child: (Scaffold(body: Center(child: Lottie.asset('assets/images/animation_lkghd69s.json'),),))) :
   ((_scheduleList.isEmpty) ? WillPopScope(
     onWillPop: () => Services.onBackPressed(context),
     child: (

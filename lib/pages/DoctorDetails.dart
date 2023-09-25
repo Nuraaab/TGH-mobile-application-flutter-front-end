@@ -422,7 +422,7 @@ void _navigateToDoctorsPage(BuildContext context) async{
                                 _navigateToDoctorsPage(context);
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: MyColors.navBarColor),
+                                  backgroundColor: MyColors.navBarColor),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [

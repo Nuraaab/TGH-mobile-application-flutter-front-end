@@ -51,20 +51,12 @@ class Services {
         ),
         actions: <Widget>[
           TextButton(
-            child: Text('No',
-              style: MyText.subhead(context)!.copyWith(
-                fontWeight: FontWeight.w500,
-                fontSize: 18,
-              ),
+            child: Text('No'
             ),
             onPressed: () => Navigator.of(context).pop(false),
           ),
           TextButton(
-            child: Text('Yes',
-              style: MyText.subhead(context)!.copyWith(
-                fontWeight: FontWeight.w500,
-                fontSize: 18,
-              ),
+            child: Text('Yes'
             ),
             onPressed: () => Navigator.of(context).pop(true),
           ),
