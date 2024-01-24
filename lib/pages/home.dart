@@ -68,13 +68,14 @@ class _HomePageState extends State<HomePage> {
   late  String encodedDescriptionAm = jsonEncode(encodedText);
   late String noQuotesDescriptionAm = encodedDescription.replaceAll('"', '');
   late String breakReplacedAm = noQuotesDescription.replaceAll(RegExp(r'<br>|<\/br>'), '');
-  late String _selectedLanguage;
+  late String _selectedLanguage = "English";
   late bool _isEnglish;
-  List<String> _languages = ['English', 'አማርኛ'];
+  List<String> _languages = ['English','አማርኛ'];
 
   void _setSelectedLanguage() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool? selectedLanguage = prefs.getBool('isEnglish');
+    bool selectedLanguage = prefs.getBool('isEnglish') ?? true;
+    print('selected status ${selectedLanguage}');
     setState(() {
       if(selectedLanguage == true){
         _selectedLanguage = "English";
@@ -187,7 +188,7 @@ void _navigateToAppointmentPage()  {
         appBar: AppBar(
           elevation: 0.0,
           centerTitle: true,
-          title: Text(_isEnglish ? 'TGH' : 'ተ.አ.ሆ',
+          title: Text(_isEnglish ? 'TGH' : 'ተ.ጠ.ሆ',
             style: TextStyle(
               fontWeight:_isEnglish ? FontWeight.bold: FontWeight.normal,
             ),
@@ -202,8 +203,7 @@ void _navigateToAppointmentPage()  {
                   SharedPreferences prefs = await SharedPreferences.getInstance();
                   setState(() {
                     _selectedLanguage = language!;
-                    // Update the _isEnglish variable based on the selected language
-                    if (language == 'English') {
+                   if (language == 'English') {
                       prefs.setBool('isEnglish', true);
                     } else {
                       prefs.setBool('isEnglish', false);
@@ -213,6 +213,7 @@ void _navigateToAppointmentPage()  {
                   });
                 },
                 items: _languages.map<DropdownMenuItem<String>>((String language) {
+                  print('language : ${language}');
                   return DropdownMenuItem<String>(
                     value: language,
                     child: Text(

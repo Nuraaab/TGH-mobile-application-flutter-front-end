@@ -41,7 +41,7 @@ class _ContactPageState extends State<ContactPage> {
   bool _isEnglish =false;
   void _checkLanguageStatus() async{
     final prefs = await SharedPreferences.getInstance();
-    final isEnglish = prefs.getBool('isEnglish') ?? false;
+    final isEnglish = prefs.getBool('isEnglish') ?? true;
     setState(() {
       _isEnglish = isEnglish;
     });

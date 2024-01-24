@@ -229,6 +229,7 @@ Future<ApiResponse> getPatients(String? email) async {
     }
   }catch(e){
     patientResponse.error = something;
+    print('errorrrrrrrrrrrrrRRRRRRRR ${e}');
   }
   return patientResponse;
 }
@@ -353,12 +354,14 @@ Future<ApiResponse> payment(var body) async {
     body: body,
     );
     var data = jsonDecode(response.body);
-    switch(data){
+    switch(data['status']){
       case 'fail':
         paymentResponse.error = something;
         break;
       default:
         paymentResponse.success = 'Your Payment is successfull!';
+        paymentResponse.book_id = data['booking_id'].toString();
+        print('booking id : ${data['booking_id']}');
         break;
     }
   }catch(e){
@@ -550,4 +553,51 @@ Future<ApiResponse> uploadImage(var data) async {
     uploadImageResponse.error = something;
   }
   return uploadImageResponse;
+}
+
+
+Future<ApiResponse> getPriceData(var body) async {
+  ApiResponse priceResponse = ApiResponse();
+  try{
+    final response = await http.post(Uri.parse(cardPriceUrl),
+      body: body
+    );
+    switch(response.statusCode){
+      case 200:
+        priceResponse.data = json.decode(response.body);
+        break;
+      case 404:
+        priceResponse.error = error404;
+        break;
+      default:
+        priceResponse.error = something;
+        break;
+    }
+  }catch(e){
+    print('error: ${e}');
+    priceResponse.error = something;
+  }
+  return priceResponse;
+}
+
+
+Future<ApiResponse> editPayment(var body) async {
+  ApiResponse editPaymentResponse  = ApiResponse();
+  try{
+    final response = await http.post(Uri.parse(updatePaymentUrl),
+      body: body,
+    );
+    var data = jsonDecode(response.body);
+    switch(data['status']){
+      case 'fail':
+        editPaymentResponse.error = something;
+        break;
+      default:
+        editPaymentResponse.success = 'Your Payment is successfull!';
+        break;
+    }
+  }catch(e){
+    editPaymentResponse.error = something;
+  }
+  return editPaymentResponse;
 }

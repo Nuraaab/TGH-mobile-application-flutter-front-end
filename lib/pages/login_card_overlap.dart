@@ -38,7 +38,7 @@ class LoginCardOverlapRouteState extends State<LoginCardOverlapRoute> {
   bool _loginStarted = false;
   void _checkLanguageStatus() async{
     final prefs = await SharedPreferences.getInstance();
-    final isEnglish = prefs.getBool('isEnglish') ?? false;
+    final isEnglish = prefs.getBool('isEnglish') ?? true;
     setState(() {
       _isEnglish = isEnglish;
     });
@@ -67,7 +67,7 @@ class LoginCardOverlapRouteState extends State<LoginCardOverlapRoute> {
         String? email = loginData[0]['email'];
         Navigator.of(cont).pushReplacement(MaterialPageRoute(builder: (_) => BookingPage(email: email)));
         snackBar.show(
-            context, _isEnglish ? "${loginResponse.success}" : "ወደ አካውንትዎ መግባት ችለዋል！", Colors.green);
+            context, _isEnglish ? "${loginResponse.success} l1" : "ወደ አካውንትዎ መግባት ችለዋል！", Colors.green);
       }else if(loginResponse.error == '404'){
         setState(() {
           _loginStarted = false;

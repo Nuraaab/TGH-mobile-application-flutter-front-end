@@ -3,4 +3,5 @@ class ApiResponse {
   String? error;
   String? success;
   String? message;
+  String? book_id;
 }

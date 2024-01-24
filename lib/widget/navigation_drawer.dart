@@ -62,7 +62,7 @@ class _NavigationDrawerWidgetState extends State<NavigationDrawerWidget> {
   bool _isEnglish =false;
   void _checkLanguageStatus() async{
     final prefs = await SharedPreferences.getInstance();
-    final isEnglish = prefs.getBool('isEnglish') ?? false;
+    final isEnglish = prefs.getBool('isEnglish') ?? true;
     setState(() {
       _isEnglish = isEnglish;
     });
@@ -75,7 +75,6 @@ class _NavigationDrawerWidgetState extends State<NavigationDrawerWidget> {
       List<dynamic> profileData = userResponse.data as List<dynamic>;
       setState(() {
         _profileData = profileData.cast<User>();
-        print('profile photo :${profileData[0].avatar}');
         _isProfileLodding = false;
       });
     }else if(userResponse.error == '404'){

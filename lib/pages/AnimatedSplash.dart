@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testing1212/data/my_colors.dart';
 import 'package:testing1212/pages/home.dart';
 import 'package:page_transition/page_transition.dart';
@@ -10,6 +11,15 @@ class AnimatedSpalshScreen extends StatefulWidget {
   State<AnimatedSpalshScreen> createState() => _AnimatedSpalshScreenState();
 }
 class _AnimatedSpalshScreenState extends State<AnimatedSpalshScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _setLanguage();
+  }
+  void _setLanguage() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isEnglish', true);
+  }
   @override
   Widget build(BuildContext context) {
     return AnimatedSplashScreen(

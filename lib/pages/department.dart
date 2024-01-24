@@ -65,7 +65,7 @@ List<dynamic> modelList = [];
   }
   void _checkLanguageStatus() async{
     final prefs = await SharedPreferences.getInstance();
-    final isEnglish = prefs.getBool('isEnglish') ?? false;
+    final isEnglish = prefs.getBool('isEnglish') ?? true;
     setState(() {
       _isEnglish = isEnglish;
     });

@@ -68,7 +68,7 @@ class RegisterPageState extends State<RegisterPage> {
   bool _isRegisterStarted = false;
   void _checkLoginStatus() async{
     final prefs = await SharedPreferences.getInstance();
-    final isBooking = prefs.getBool('booking') ?? false;
+    final isBooking = prefs.getBool('booking') ?? true;
     setState(() {
       _isBooking = isBooking;
     });
@@ -133,7 +133,7 @@ class RegisterPageState extends State<RegisterPage> {
                 MaterialPageRoute(builder: (_) => HomePage()));
             snackBar.show(
                 context, _isEnglish ?
-            "${registerResponse.success}" : "ታላቅ ዜና! በተሳካ ሁኔታ ተመዝግበዋል",
+            "${registerResponse.success} 4" : "ታላቅ ዜና! በተሳካ ሁኔታ ተመዝግበዋል",
                 Colors.green);
           } else {
             Navigator.of(context).pushReplacement(
@@ -141,7 +141,7 @@ class RegisterPageState extends State<RegisterPage> {
                     builder: (_) => BookingPage(email: _emailcontroller.text)));
             snackBar.show(
                 context, _isEnglish ?
-            "${registerResponse.success}" : "ታላቅ ዜና! በተሳካ ሁኔታ ተመዝግበዋል።",
+            "${registerResponse.success} 3" : "ታላቅ ዜና! በተሳካ ሁኔታ ተመዝግበዋል።",
                 Colors.green);
           }
         }else if(registerResponse.error == something) {
@@ -149,14 +149,14 @@ class RegisterPageState extends State<RegisterPage> {
             _isRegisterStarted = false;
           });
           snackBar.show(
-              context, _isEnglish ? "Something went wrong. please try again" : "ስህተት ተገኝቷል። እባክዎ እንደገና ይሞክሩ：：", Colors.red);
+              context, _isEnglish ? "Something went wrong. please try again 1" : "ስህተት ተገኝቷል። እባክዎ እንደገና ይሞክሩ：：", Colors.red);
         }else {
           setState(() {
             _isRegisterStarted = false;
           });
           snackBar.show(
               context, _isEnglish
-              ? "${registerResponse.error}"
+              ? "${registerResponse.error} 2"
               : "ያስገቡት ስልክ ቁጥር ወይም ኢሜይል አድራሻ አስቀድሞ አለ።", Colors.red);
         }
       }

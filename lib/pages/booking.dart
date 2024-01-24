@@ -10,6 +10,7 @@ import 'package:testing1212/pages/searchAppointment.dart';
 import 'package:testing1212/pages/somethingWrong.dart';
 import 'package:testing1212/service/services.dart';
 import 'package:testing1212/service/user_service.dart';
+import 'package:testing1212/widget/snackbar.dart';
 import '../data/my_colors.dart';
 import '../models/booking.dart';
 import '../models/patient.dart';
@@ -37,7 +38,7 @@ class _BookingPageState extends State<BookingPage> {
   bool _isEnglish =false;
   void _checkLanguageStatus() async{
     final prefs = await SharedPreferences.getInstance();
-    final isEnglish = prefs.getBool('isEnglish') ?? false;
+    final isEnglish = prefs.getBool('isEnglish') ?? true;
     setState(() {
       _isEnglish = isEnglish;
     });
@@ -82,7 +83,42 @@ class _BookingPageState extends State<BookingPage> {
       setState(() {
         _isLodding = false;
       });
+      print('hello wrongs');
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) =>SomethingWrong(routeWidget: BookingPage(email: widget.email!,),)));
+    }
+  }
+  final _transaction_id = TextEditingController();
+
+  Future Payment(BuildContext context, String price, String nameEn, String nameAm, String booking_id) async {
+    print('price : $price');
+    if (_transaction_id.text == "") {
+      snackBar.show(
+          context,_isEnglish ? "Transaction Id must be filled" :"የደረሰኝ ቁጥር መሞላት አለባቸው", Colors.red);
+    }else if(price == '0' || price == '' || price == null){
+      snackBar.show(
+          context,_isEnglish ? "The price for  ${nameEn} is not specified. you can skip and pay later" :"የ${nameAm} ዋጋ አልተገለጸም፡፡ መዝለል እና ቆይተው መክፈል ይችላሉ፡፡", Colors.red);
+    }else {
+       var body = {
+         "booking_id": booking_id,
+         "amount": price,
+         "trs_id": _transaction_id.text,
+       };
+      ApiResponse updatePaymentResponse = await editPayment(body);
+      if(updatePaymentResponse.error == null){
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_)=> BookingPage(email: widget.email)));
+        snackBar.show(
+            context,_isEnglish ?
+        "${updatePaymentResponse.success}" : "ክፍያዎ ተሳክቷል።",
+            Colors.green);
+      }
+      else if(updatePaymentResponse.error == '404'){
+        snackBar.show(
+            context, _isEnglish ? "Page not found. please try again" : "ገጹ አልተገኘም። እባክዎ እንደገና ይሞክሩ：：", Colors.red);
+      }else{
+        snackBar.show(
+            context, _isEnglish ? "Something went wrong. please try again" : "ስህተት ተገኝቷል። እባክዎ እንደገና ይሞክሩ patient：：", Colors.red);
+      }
+
     }
   }
   @override
@@ -268,6 +304,255 @@ class _BookingPageState extends State<BookingPage> {
                               ),
                             ),
                           ),
+                          (_bookings[index].trsId == null || _bookings[index].trsId.isEmpty) ? Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 2),
+                            child: Column(
+                              children: [
+                                ListTile(
+                                  leading: const Icon(Icons.person, color: MyColors.grey_3,),
+                                  title:  Text(_isEnglish ? 'Price' : 'ዋጋ',
+                                    style: TextStyle(
+                                      color: MyColors.grey_3,
+                                    ),
+                                  ),
+                                  trailing: Text('${_bookings[index].amount.toString()}ETB',
+                                    style: const TextStyle(
+                                      color: MyColors.grey_3,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  width: 200,
+                                  height: 57,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: MyColors.accent,
+                                      elevation: 0,
+                                    ),
+                                    child: Text(
+                                      _isEnglish ? "Pay" : "ይክፈሉ",
+                                      style: MyText.subhead(context)!
+                                          .copyWith(color: Colors.white),
+                                    ),
+                                    onPressed: () {
+                                      (_bookings[index].amount == '0' || _bookings[index].amount == '' || _bookings[index].amount == null) ? snackBar.show(
+                                          context,_isEnglish ?
+                                      "The price for ${_bookings[index].nameEn} is not specified" : "የ ${_bookings[index].nameAm} ዋጋ አልተገለጸም። እባክዎ ቆይተው ይሞክሩ፡፡",
+                                          Colors.red) :
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return Dialog(
+                                            child: Container(
+                                              width: double.infinity,
+                                              padding: EdgeInsets.only(left: 10, top: 5, bottom: 5, right: 5),
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(20.0),
+
+                                              ),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Align(
+                                                    alignment: Alignment.topRight,
+                                                    child: IconButton(
+                                                      icon: Icon(Icons.close),
+                                                      onPressed: () {
+                                                        Navigator.of(context).pop();
+                                                      },
+                                                    ),
+                                                  ),
+                                          Padding(
+                                          padding: EdgeInsets.only(bottom: 10.0),
+                                          child: Column(
+                                          children: [
+                                                  Row(
+                                                    children: [
+                                                      Wrap(
+                                                        children: [
+                                                          Text(
+                                                            _isEnglish ? 'Telebirr Account' : 'የቴሌ ብር አካውንት',
+                                                            style: MyText.body1(context)!.copyWith(
+                                                              color: MyColors.textColor1,
+                                                              fontWeight: FontWeight.w400,
+                                                            ),
+                                                            maxLines: 2,
+                                                          ),
+
+                                                        ],
+
+                                                      ),
+                                                      SizedBox(width: 10),
+                                                      Text(
+                                                        '1732283948069249025',
+                                                        style: MyText.body1(context)!.copyWith(
+                                                          color: MyColors.textColor1,
+                                                          fontWeight: FontWeight.w500,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                            SizedBox(height: 20),
+                                            Text(
+                                              'ውድ ደንበኛችን: ከላይ በተቀመጠው የቴሌ ብር አካውንታችን ${_bookings[index].amount.toString()} ብር  ከከፈሉ በኋላ የከፈሉበትን ደረሰኝ  (transaction id) ከታች ባለው ፎርም ላይ አስገብተው ይላኩልን፡፡',
+                                              style: MyText.body1(context)!.copyWith(
+                                                color: MyColors.textColor1,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+
+                                            Container(height: 35),
+
+                                                  ],
+                                          ),
+                                          ),
+                                                  Padding(
+                                                    padding: EdgeInsets.only(bottom: 10.0),
+                                                    child: TextField(
+                                                      controller: _transaction_id,
+                                                      obscureText: false,
+                                                      keyboardType: TextInputType.text,
+                                                      decoration: InputDecoration(
+                                                        enabledBorder: OutlineInputBorder(
+                                                          borderSide: BorderSide(
+                                                            color: MyColors.textColor1,
+                                                          ),
+                                                          borderRadius: BorderRadius.circular(10),
+                                                        ),
+                                                        focusedBorder: OutlineInputBorder(
+                                                          borderSide: BorderSide(
+                                                            color: MyColors.textColor1,
+                                                          ),
+                                                          borderRadius: BorderRadius.circular(10),
+                                                        ),
+                                                        contentPadding: EdgeInsets.all(15),
+                                                        hintText: _isEnglish ? 'Enter Transaction Id' : 'የደረሰኝ ቁጥሩን ያስገቡ',
+                                                        hintStyle: MyText.body1(context)!.copyWith(
+                                                          color: MyColors.textColor1,
+                                                          fontWeight: FontWeight.w500,
+                                                        ),
+                                                      ),
+                                                      style: MyText.body1(context)!.copyWith(
+                                                        color: MyColors.textColor1,
+                                                        fontWeight: FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Column(
+                                                    children: [
+                                                      Container(
+                                                        width: double.infinity,
+                                                        height: 57,
+                                                        child: ElevatedButton(
+                                                          style: ElevatedButton.styleFrom(
+                                                            backgroundColor: MyColors.navBarColor,
+                                                            elevation: 0,
+                                                          ),
+                                                          child: Text(
+                                                            _isEnglish ? "Pay" : "ይክፈሉ",
+                                                            style: MyText.subhead(context)!
+                                                                .copyWith(color: Colors.white),
+                                                          ),
+                                                          onPressed: () {
+                                                         Payment(context, _bookings[index].amount.toString(), _bookings[index].nameEn.toString(), _bookings[index].nameAm.toString(), _bookings[index].id.toString());
+                                                          },
+                                                        ),
+                                                      ),
+                                                      SizedBox(height: 10),
+
+                                                    ],
+                                                  ),
+                                                  Padding(padding: EdgeInsets.only(bottom: 10.0),
+                                                    child: Column(
+                                                      children: [
+                                                        Row(
+                                                          children: [
+                                                            Text(
+                                                              'በሚከፍሉበት ጊዜ ችግር ካጋጠመዎት',
+                                                              style: MyText.body1(context)!.copyWith(
+                                                                color: MyColors.textColor1,
+                                                                fontWeight: FontWeight.w500,
+                                                              ),
+                                                              textAlign: TextAlign.start,
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        SizedBox(height: 10,),
+                                                        Row(
+                                                          children: [
+                                                            Text(
+                                                              _isEnglish ? 'Short Code' : 'አጭር ቁጥር',
+                                                              style: MyText.body1(context)!.copyWith(
+                                                                color: MyColors.textColor1,
+                                                                fontWeight: FontWeight.w500,
+                                                              ),
+                                                            ),
+                                                            SizedBox(width: 10),
+                                                            Text(
+                                                              '8175',
+                                                              style: MyText.body1(context)!.copyWith(
+                                                                color: MyColors.textColor1,
+                                                                fontWeight: FontWeight.w500,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        SizedBox(height: 10,),
+                                                        Row(
+                                                          children: [
+                                                            Text(
+                                                              _isEnglish ? 'Phone Number' : 'ስልክ ቁጥር',
+                                                              style: MyText.body1(context)!.copyWith(
+                                                                color: MyColors.textColor1,
+                                                                fontWeight: FontWeight.w500,
+                                                              ),
+                                                            ),
+                                                            SizedBox(width: 10),
+                                                            Text(
+                                                              '+251940333333',
+                                                              style: MyText.body1(context)!.copyWith(
+                                                                color: MyColors.textColor1,
+                                                                fontWeight: FontWeight.w500,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        SizedBox(height: 10,),
+                                                        Row(
+                                                          children: [
+                                                            Text(
+                                                              _isEnglish ? 'Email' : 'ኢሜል',
+                                                              style: MyText.body1(context)!.copyWith(
+                                                                color: MyColors.textColor1,
+                                                                fontWeight: FontWeight.w500,
+                                                              ),
+                                                            ),
+                                                            SizedBox(width: 10),
+                                                            Text(
+                                                              'info@tgh.com',
+                                                              style: MyText.body1(context)!.copyWith(
+                                                                color: MyColors.textColor1,
+                                                                fontWeight: FontWeight.w500,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                              ],
+                            ),
+                          ) : Text(''),
                         ],
                       ),
                     ),

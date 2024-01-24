@@ -47,11 +47,12 @@ class _DoctorsDetailsState extends State<DoctorsDetails> {
     _checkData();
     _checkTimeTable();
     _checkLanguageStatus();
+    _getPrice();
   }
   bool _isEnglish =false;
   void _checkLanguageStatus() async{
     final prefs = await SharedPreferences.getInstance();
-    final isEnglish = prefs.getBool('isEnglish') ?? false;
+    final isEnglish = prefs.getBool('isEnglish') ?? true;
     setState(() {
       _isEnglish = isEnglish;
     });
@@ -67,8 +68,32 @@ class _DoctorsDetailsState extends State<DoctorsDetails> {
       });
     }
   }
-  List<dynamic> _data = [];// for schedule list
+  List<dynamic> _data = [];//
+  List<dynamic> _priceData = [];
   String _email = '';// for email
+
+  Future<void> _getPrice() async {
+    DateTime current_date = DateTime.now();
+    print('currrent date ${current_date} and doctor id ${widget.list[widget.index].id.toString()}');
+    var body = {
+      "current_date": current_date.toString(),
+      "doctor_id": widget.list[widget.index].id.toString(),
+    };
+  ApiResponse  priceResponse = await getPriceData(body);
+    if(priceResponse.error == null){
+      List<dynamic> price = priceResponse.data as List<dynamic>;
+      setState(() {
+        _priceData = price;
+      });
+      print('hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh ${_priceData[0]['price']}');
+    }else if(priceResponse.error == '404'){
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) =>Error404(routeWidget: DoctorsDetails(list: widget.list, index: widget.index,),)));
+      print('error is : ${priceResponse.error}');
+    }else{
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) =>SomethingWrong(routeWidget: DoctorsDetails(list: widget.list, index: widget.index,),)));
+   print('somethinggggggggggggggg went wrong');
+    }
+  }
   Future<void> getData() async {
     ApiResponse scheduleResponse = await getSchedule(_selectedDay, widget.list[widget.index].id);
     if(scheduleResponse.error == null){
@@ -101,10 +126,15 @@ void _navigateToDoctorsPage(BuildContext context) async{
   if(_selectedDay!= weekday || updatedWorkingTime.isEmpty ){ //check if the selected date is the same as the selected day
       snackBar.show(
           context, _isEnglish ? "Oops! Looks like you left a field empty or selected an invalid schedule/date format. Please correct it and try again." : 'ውይ! ባዶ ቦታ ያስቀሩ ወይም ልክ ያልሆነ የጊዜ ሰሌዳ/ቀን የመረጡ ይመስላል። እባክዎ አስተካክለው እንደገና ይሞክሩ።', Colors.red,);
-    }else if(_selectedDate.isBefore(currentDate)){
+    }else if(_selectedDate.isBefore(today)){
       snackBar.show(
           context, _isEnglish ? "Oops! Looks like you selected past date. Please correct it and try again." : 'ውይ! ያለፈውን ቀን የመረጡት ይመስላል። እባክዎ አስተካክለው እና እንደገና ይሞክሩ።', Colors.red);
-    }else{
+    }
+  // else if(_priceData[0]['starting_date'].isNull){
+  //   snackBar.show(
+  //       context, _isEnglish ? "Oops! Price starting date for this doctor is not seted. Please try later." : 'ውይ! ለዚህ ዶክተር የዋጋ መጀመሪያ ቀን አልተቀመተም። እባክዎ እንደገና ይሞክሩ፡፡', Colors.red);
+  //    }
+  else{
       if(_email.isEmpty){ // if no email in the session navigate to login page
         Navigator.pushNamed(context, '/appointment');
       }else{
@@ -115,13 +145,19 @@ void _navigateToDoctorsPage(BuildContext context) async{
               email: _email,
               day: _timeTable ? widget.day! :_selectedDay,
               date: '${_selectedDate.year}-${_selectedDate.month}-${_selectedDate.day}',
-              schedule:_timeTable ? widget.date! : updatedWorkingTime[_selectedIndex],),));
+              schedule:_timeTable ? widget.date! : updatedWorkingTime[_selectedIndex],
+              price: _priceData.isNotEmpty ? _priceData[0]['price'] : '0',
+              nameEn: widget.list[widget.index].nameEn,
+              nameAm: widget.list[widget.index].nameAm,
+            ),));
+
       }
     }
 
 
   }
   DateTime currentDate = DateTime.now();
+  late DateTime today = DateTime(currentDate.year, currentDate.month, currentDate.day);
   DateTime _selectedDate = DateTime.now();
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -169,7 +205,7 @@ void _navigateToDoctorsPage(BuildContext context) async{
     final String encodedDescriptionAm = jsonEncode(descriptionAm);// encode the fetched value since it has html tag
     final String noQuotesDescriptionAm = encodedDescriptionAm.replaceAll('"', '');// replaced the double quote with space character
     final String breakReplacedAm = noQuotesDescriptionAm.replaceAll(RegExp(r'<br>|<\/br>'), '');
-    return Scaffold(
+     return Scaffold(
       floatingActionButton: const CustomFloatingActionButton(),
       body: SingleChildScrollView(
         child: Column(
@@ -214,7 +250,6 @@ void _navigateToDoctorsPage(BuildContext context) async{
                       child: Column(
                         children: [
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(_isEnglish ? "${widget.list[widget.index].nameEn}" : "${widget.list[widget.index].nameAm}",// display doctors name
                                 textAlign: TextAlign.center,
@@ -226,7 +261,6 @@ void _navigateToDoctorsPage(BuildContext context) async{
                           ),
                           const SizedBox(height: 10),
                            Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(_isEnglish ? '${widget.list[widget.index].poEn}' : '${widget.list[widget.index].poAm}',
                                 textAlign: TextAlign.center,
@@ -235,6 +269,17 @@ void _navigateToDoctorsPage(BuildContext context) async{
                               ),
                             ],
                           ),
+                          const SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Text(_isEnglish ? 'Price : ${_priceData.isNotEmpty ? '${_priceData[0]['price']}ETB' : '0 ETB'}' : 'ዋጋ : ${_priceData.isNotEmpty ? '${_priceData[0]['price']}ብር' : '0 ብር '}',
+                                textAlign: TextAlign.center,
+                                style: MyText.body1(context)!.copyWith(
+                                    color: MyColors.grey_80,  fontWeight: FontWeight.w500),
+                              ),
+                            ],
+                          ),
+
                           const SizedBox(height: 10),
                          _isEnglish ? DoctorsEn(docsEn: breakReplaced,) : DoctorsAm(docsAm: breakReplacedAm),
                           const SizedBox(height: 10,),
